@@ -1,0 +1,6 @@
+tools:
+  - name: "PageScrape"
+    description: "Scrapes web pages, can export HTML or Markdown."
+    module: "tkr_agents.toolbox.tools.tkr_simple_scrape.page_scrape_tool"
+    function: "PageScrapeTool"
+    enabled: true

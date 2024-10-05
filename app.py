@@ -1,24 +1,19 @@
-from toolbox.tools import PageScrapeTool, GetWeatherTool
-from tkr_utils.llm import OpenAILLM
-from agents.tkr_agent import Agent
+# app.py
+
+from tkr_agents.agents.tools_agent.tools_agent import ToolsAgent
 from tkr_utils import setup_logging
 
+# Initialize logger
 logger = setup_logging(__file__)
 
-# List tools available to the agent
-tools = {
-    "PageScrapeTool": (PageScrapeTool, "Scrapes web pages and can export HTML or Markdown."),
-    "GetWeatherTool": (GetWeatherTool, "Provides weather information based on location.")
-}
-
-# Instantiate the LLM
-llm_instance = OpenAILLM()
-
-# Instantiate the Agent with the llm and tools
-agent = Agent(llm=llm_instance, tools=tools)
+# Instantiate the ToolsAgent using the default config path
+tools_agent = ToolsAgent()
 
 # A query with params
 query = "Scrape data from https://offhourscreative.com"
 
-response = agent.process_query(query)
+# Processing the query
+response = tools_agent.process_query(query)
+
+# Log the response
 logger.info(response)

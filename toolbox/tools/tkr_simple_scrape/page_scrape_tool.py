@@ -1,17 +1,12 @@
-# tools.py
-from tkr_utils import logs_and_exceptions, setup_logging
-from .tkr_simple_scrape_tool import simple_scrape, create_filename_from_url
+# page_scrape_tool.py
+from tkr_utils import logs_and_exceptions, setup_logging, AppPaths
+from toolbox.tool_interface import ToolInterface
 from typing import Any, Dict
-from abc import ABC, abstractmethod
+from .tkr_simple_scrape import simple_scrape, create_filename_from_url, create_directory_from_url
+import os
 
 # Set up the logger
 logger = setup_logging(__file__)
-
-class ToolInterface(ABC):
-    @logs_and_exceptions(logger)
-    @abstractmethod
-    def execute(self, params: Dict[str, Any]) -> Any:
-        pass
 
 class PageScrapeTool(ToolInterface):
     """
@@ -40,21 +35,20 @@ class PageScrapeTool(ToolInterface):
             logger.error("URL parameter is missing.")
             return {"status": "failure", "message": "URL parameter is missing"}
 
-        result = simple_scrape(url, export_html, img_only)
-        filename = create_filename_from_url(url, is_html=export_html, img_only=img_only)
+        directory_name = create_directory_from_url(url)
+        AppPaths.add(directory_name)
+        dir_path = os.path.join(AppPaths.LOCAL_DATA, directory_name)
 
+        result = simple_scrape(url, export_html, img_only)
         if result:
-            with open(filename, 'w', encoding='utf-8') as file:
+            filename = create_filename_from_url(url, is_html=export_html, img_only=img_only)
+            file_path = os.path.join(dir_path, filename)
+
+            with open(file_path, 'w', encoding='utf-8') as file:
                 file.write(result)
-            logger.info(f"Content written to {filename}")
-            return {"filename": filename, "status": "success"}
+
+            logger.info(f"Content written to {file_path}")
+            return {"filename": file_path, "status": "success"}
         else:
             logger.error("Failed to process the content properly.")
             return {"status": "failure", "message": "Failed to process the content properly"}
-
-class GetWeatherTool(ToolInterface):
-    @logs_and_exceptions(logger)
-    def execute(self, params: Dict[str, Any]) -> Any:
-        logger.info("Executing Mock GetWeatherTool")
-        # Placeholder for getting weather logic
-        return {"weather": "sunny"}

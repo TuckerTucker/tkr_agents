@@ -1,5 +1,5 @@
 openai
 
-#tkr_simple_scrape_tool
 html2text
 bs4
+pyyaml
